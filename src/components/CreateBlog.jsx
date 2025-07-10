@@ -21,7 +21,6 @@ const CreateBlog = () => {
         category: "",
     });
 
-
     const [image, setImage] = useState(null);
 
     useEffect(() => {

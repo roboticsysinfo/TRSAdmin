@@ -10,7 +10,7 @@ export const fetchSiteDetail = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get(`/get-site-details`);
-      return res.data;
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch');
     }

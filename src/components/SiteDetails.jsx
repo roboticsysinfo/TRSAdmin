@@ -45,6 +45,9 @@ const SiteDetails = () => {
 
   const [activeModal, setActiveModal] = useState(null);
 
+  console.log("data", data);
+  
+
   useEffect(() => {
     dispatch(fetchSiteDetail());
   }, [dispatch]);
@@ -82,6 +85,7 @@ const SiteDetails = () => {
       {loading && <p>Loading...</p>}
       {data && (
         <>
+
           {/* ABOUT */}
           <Card className="mb-3">
             <Card.Header className="d-flex justify-content-between">
