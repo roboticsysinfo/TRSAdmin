@@ -61,7 +61,7 @@ const AddStory = () => {
     formData.append('metaKeywords', metaKeywords);
     formData.append('isFeatured', isFeatured);
     formData.append('isVerified', isVerified); // ✅ Add to payload
-    if (imageFile) formData.append('file', imageFile);
+    if (imageFile) formData.append('storyImage', imageFile);
 
     dispatch(addStory(formData));
   };
