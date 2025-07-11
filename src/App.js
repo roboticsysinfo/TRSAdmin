@@ -30,11 +30,7 @@ function App() {
     const stored = localStorage.getItem('user');
     const user = stored ? JSON.parse(stored) : null;
 
-    console.log("app user", user);
-
     const token = user?.token;
-
-    console.log("app token", token);
 
     if (user && token) {
       dispatch(setUser({ user, token }));

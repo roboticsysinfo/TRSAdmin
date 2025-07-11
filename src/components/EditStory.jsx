@@ -8,10 +8,9 @@ import {
 import { fetchCategories } from '../redux/slices/categorySlice';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import hljs from 'highlight.js';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import 'highlight.js/styles/github.css';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 const EditStory = () => {
   const dispatch = useDispatch();
@@ -30,9 +29,6 @@ const EditStory = () => {
   useEffect(() => {
     dispatch(getStoryById(id));
     dispatch(fetchCategories());
-    hljs.configure({
-      languages: ['javascript', 'python', 'java', 'cpp', 'php'],
-    });
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -48,7 +44,7 @@ const EditStory = () => {
     if (message) {
       toast.success(message);
       dispatch(clearStoryMessage());
-      navigate('/admin/stories');
+      navigate('/stories');
     }
     if (error) {
       toast.error(error);
@@ -75,37 +71,8 @@ const EditStory = () => {
     dispatch(updateStory({ id, data: formData }));
   };
 
-  const modules = {
-    syntax: {
-      highlight: (text) => hljs.highlightAuto(text).value,
-    },
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ color: [] }, { background: [] }],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      ['link', 'image', 'code-block'],
-      ['clean'],
-    ],
-  };
-
-  const formats = [
-    'header',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'blockquote',
-    'code-block',
-    'color',
-    'background',
-    'list',
-    'bullet',
-    'link',
-    'image',
-  ];
-
   return (
+
     <div className="container py-5">
       <div className="card shadow-sm p-40">
         <h4 className="mb-4">✏️ Edit Story</h4>
@@ -123,15 +90,22 @@ const EditStory = () => {
 
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <ReactQuill
-              theme="snow"
-              value={description}
-              onChange={setDescription}
-              modules={modules}
-              formats={formats}
-              placeholder="Write your story here..."
+            <CKEditor
+              editor={ClassicEditor}
+              data={description}
+              config={{
+                toolbar: [
+                  'heading', '|', 'bold', 'italic', 'underline', 'link', 'bulletedList', 'numberedList',
+                  '|', 'blockQuote', 'insertTable', 'imageUpload', 'undo', 'redo', 'codeBlock'
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setDescription(data);
+              }}
             />
           </div>
+
 
           <div className="mb-3">
             <label className="form-label">Category</label>

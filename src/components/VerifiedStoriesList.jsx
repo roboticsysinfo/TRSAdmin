@@ -36,6 +36,12 @@ const VerifiedStoriesList = () => {
     }
   };
 
+  function stripHtml(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
+
   // ✅ Filter only verified stories
   const verifiedStories = stories.filter((story) => story.isVerified);
 
@@ -75,8 +81,9 @@ const VerifiedStoriesList = () => {
                 <div className="card-body">
                   <h5 className="card-title">{story.title}</h5>
                   <p className="card-text text-muted" style={{ minHeight: '60px' }}>
-                    {story.description?.slice(0, 100)}...
+                    {stripHtml(story.description)?.slice(0, 100)}...
                   </p>
+
                   <div className="d-flex justify-content-between">
                     <a
                       href={`https://truerealstory.com/story/${slugify(story.title, { lower: true, strict: true })}/${story._id}`}
