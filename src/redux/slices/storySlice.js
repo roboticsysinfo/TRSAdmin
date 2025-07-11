@@ -100,6 +100,20 @@ export const verifyStory = createAsyncThunk(
 );
 
 
+// ✅ Get only startup stories
+export const getStartupStories = createAsyncThunk(
+  'story/getStartupStories',
+  async ({ page = 1, limit = 10, search = '' }, { rejectWithValue }) => {
+    try {
+      const res = await api.get(`/startup-stories?page=${page}&limit=${limit}&search=${search}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+
 
 // Initial State
 const initialState = {
@@ -190,6 +204,23 @@ const storySlice = createSlice({
         );
         state.message = action.payload.message;
       })
+
+      // Get Startup Stories
+      .addCase(getStartupStories.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getStartupStories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.stories = action.payload.data.stories;
+        state.total = action.payload.data.total;
+        state.currentPage = action.payload.data.currentPage;
+        state.totalPages = action.payload.data.totalPages;
+      })
+      .addCase(getStartupStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || 'Failed to fetch startup stories';
+      })
+
 
   }
 });

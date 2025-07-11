@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const StoryRequestList = () => {
-    
+
     const dispatch = useDispatch();
     const {
         stories,
@@ -101,12 +101,18 @@ const StoryRequestList = () => {
                                     </p>
 
                                     <div className="d-flex justify-content-between">
-                                        <Link to={`/stories/${story._id}`} className="btn btn-sm btn-primary">
-                                            View
-                                        </Link>
+
                                         <button className="btn btn-sm btn-warning text-dark" onClick={() => handleStoryVerfication(story._id)}>
                                             Verify
                                         </button>
+
+                                        <Link to={`/story-view/${story._id}`} className="btn btn-sm btn-primary">
+                                            View
+                                        </Link>
+                                        <Link to={`/edit-story/${story._id}`} className="btn btn-sm btn-dark">
+                                            Edit
+                                        </Link>
+
                                         <button className="btn btn-sm btn-danger" onClick={() => handleDelete(story._id)}>
                                             Delete
                                         </button>

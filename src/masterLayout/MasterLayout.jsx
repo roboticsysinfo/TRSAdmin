@@ -172,6 +172,30 @@ const MasterLayout = ({ children }) => {
 
             <li>
               <NavLink
+                to='/add-story'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                  Add Story
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to='/startup-stories'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                  Startup Stories
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
                 to='/company-list-requests'
                 className={(navData) =>
                   navData.isActive ? "active-page" : ""

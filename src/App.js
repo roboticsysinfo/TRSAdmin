@@ -19,6 +19,9 @@ import SiteDetailsPage from "./pages/SiteDetailsPage";
 import AddBlogPage from "./pages/AddBlogPage";
 import BlogsListPage from "./pages/BlogsListPage";
 import EditBlogPage from "./pages/EditBlogPage";
+import StoryViewPage from "./pages/StoryViewPage";
+import AddStoryPage from "./pages/AddStoryPage";
+import StartupStoriesPage from "./pages/StartupStoriesPage";
 
 
 function App() {
@@ -108,6 +111,18 @@ function App() {
 
         <Route element={<PrivateRoute />}>
           <Route path="/edit-blog/:id" element={<EditBlogPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/add-story" element={<AddStoryPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/story-view/:id" element={<StoryViewPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/startup-stories" element={<StartupStoriesPage />} />
         </Route>
 
         {/* ❌ Fallback */}

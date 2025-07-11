@@ -38,23 +38,29 @@ const SignInLayer = () => {
   }, [user, dispatch, navigate, token]);
 
 
-
-
   const handleSubmit = (e) => {
+
     e.preventDefault();
     if (!emailOrPhone || !password) {
       toast.error("Please fill all fields");
       return;
     }
     dispatch(loginWithEmail({ emailOrPhone, password }));
+
   };
 
   return (
+
     <section className='auth bg-base d-flex flex-wrap justify-content-center'>
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
 
           <div className="text-center">
+
+            <Link to='/' className='mb-20  max-w-290-px'>
+              <img src='assets/images/logo.png' alt='' style={{ width: "100%", height: 100 }} />
+            </Link>
+
             <h4 className='mb-2'>Sign In to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
               Welcome! Please enter your details
@@ -95,6 +101,7 @@ const SignInLayer = () => {
               type='submit'
               className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'
               disabled={loading}
+              style={{backgroundColor: "#df0a09", borderColor: "#df0a09"}}
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
@@ -103,6 +110,7 @@ const SignInLayer = () => {
         </div>
       </div>
     </section>
+
   );
 };
 

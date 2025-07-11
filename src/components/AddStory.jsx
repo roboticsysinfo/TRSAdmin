@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getStoryById,
-  updateStory,
-  clearStoryMessage,
-} from '../redux/slices/storySlice';
+import { addStory, clearStoryMessage } from '../redux/slices/storySlice';
 import { fetchCategories } from '../redux/slices/categorySlice';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const EditStory = () => {
-
+const AddStory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
 
-  const { singleStory, message, error } = useSelector((state) => state.story);
+  const { message, error } = useSelector((state) => state.story);
   const { categories } = useSelector((state) => state.categories);
 
   const [title, setTitle] = useState('');
@@ -25,30 +19,15 @@ const EditStory = () => {
   const [category, setCategory] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
-  // New SEO fields
   const [metaTitle, setMetaTitle] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
   const [metaKeywords, setMetaKeywords] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
+  const [isVerified, setIsVerified] = useState(false); // ✅ New state
 
   useEffect(() => {
-    dispatch(getStoryById(id));
     dispatch(fetchCategories());
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (singleStory) {
-      setTitle(singleStory.title);
-      setDescription(singleStory.description);
-      setCategory(singleStory.category?._id || '');
-      setImagePreview(singleStory.storyImage || null);
-      setMetaTitle(singleStory.metaTitle || '');
-      setMetaDescription(singleStory.metaDescription || '');
-      setMetaKeywords(singleStory.metaKeywords?.join(', ') || '');
-      setIsFeatured(singleStory.isFeatured || false);
-    }
-  }, [singleStory]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (message) {
@@ -81,19 +60,17 @@ const EditStory = () => {
     formData.append('metaDescription', metaDescription);
     formData.append('metaKeywords', metaKeywords);
     formData.append('isFeatured', isFeatured);
+    formData.append('isVerified', isVerified); // ✅ Add to payload
+    if (imageFile) formData.append('file', imageFile);
 
-    if (imageFile) formData.append('storyImage', imageFile);
-
-    dispatch(updateStory({ id, data: formData }));
+    dispatch(addStory(formData));
   };
 
   return (
-    
     <div className="container py-5">
       <div className="card shadow-sm p-40">
-        <h4 className="mb-4">✏️ Edit Story</h4>
+        <h4 className="mb-4">➕ Add New Story</h4>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* Title */}
           <div className="mb-3">
             <label className="form-label">Title</label>
             <input
@@ -105,7 +82,6 @@ const EditStory = () => {
             />
           </div>
 
-          {/* Description */}
           <div className="mb-3">
             <label className="form-label">Description</label>
             <CKEditor
@@ -124,7 +100,6 @@ const EditStory = () => {
             />
           </div>
 
-          {/* Category */}
           <div className="mb-3">
             <label className="form-label">Category</label>
             <select
@@ -142,9 +117,8 @@ const EditStory = () => {
             </select>
           </div>
 
-          {/* Upload Image */}
           <div className="mb-3">
-            <label className="form-label">Upload New Image</label>
+            <label className="form-label">Upload Image</label>
             <input
               type="file"
               className="form-control"
@@ -163,7 +137,6 @@ const EditStory = () => {
             )}
           </div>
 
-          {/* Meta Title */}
           <div className="mb-3">
             <label className="form-label">Meta Title</label>
             <input
@@ -174,7 +147,6 @@ const EditStory = () => {
             />
           </div>
 
-          {/* Meta Description */}
           <div className="mb-3">
             <label className="form-label">Meta Description</label>
             <textarea
@@ -185,7 +157,6 @@ const EditStory = () => {
             />
           </div>
 
-          {/* Meta Keywords */}
           <div className="mb-3">
             <label className="form-label">Meta Keywords (comma separated)</label>
             <input
@@ -197,7 +168,6 @@ const EditStory = () => {
             />
           </div>
 
-          {/* isFeatured */}
           <div className="mb-3 form-check">
             <input
               type="checkbox"
@@ -211,9 +181,21 @@ const EditStory = () => {
             </label>
           </div>
 
-          {/* Submit */}
-          <button type="submit" className="btn btn-success mt-3">
-            ✅ Update Story
+          <div className="mb-3 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="isVerified"
+              checked={isVerified}
+              onChange={(e) => setIsVerified(e.target.checked)}
+            />
+            <label className="form-check-label" htmlFor="isVerified">
+              Mark as Verified
+            </label>
+          </div>
+
+          <button type="submit" className="btn btn-primary mt-3">
+            ➕ Add Story
           </button>
         </form>
       </div>
@@ -221,4 +203,4 @@ const EditStory = () => {
   );
 };
 
-export default EditStory;
+export default AddStory;
