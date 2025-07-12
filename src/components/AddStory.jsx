@@ -12,7 +12,10 @@ const AddStory = () => {
   const navigate = useNavigate();
 
   const { message, error } = useSelector((state) => state.story);
+  const { user } = useSelector((state) => state.auth);
   const { categories } = useSelector((state) => state.categories);
+
+  const isAdmin = user?.role === 'admin' || user?.isAdmin === true;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,11 +26,17 @@ const AddStory = () => {
   const [metaDescription, setMetaDescription] = useState('');
   const [metaKeywords, setMetaKeywords] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
-  const [isVerified, setIsVerified] = useState(false); // ✅ New state
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      setIsVerified(true);
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     if (message) {
@@ -59,8 +68,9 @@ const AddStory = () => {
     formData.append('metaTitle', metaTitle);
     formData.append('metaDescription', metaDescription);
     formData.append('metaKeywords', metaKeywords);
+    formData.append('user', user._id);
     formData.append('isFeatured', isFeatured);
-    formData.append('isVerified', isVerified); // ✅ Add to payload
+    formData.append('isVerified', isVerified); // ✅ trusted only if admin
     if (imageFile) formData.append('storyImage', imageFile);
 
     dispatch(addStory(formData));
@@ -181,18 +191,20 @@ const AddStory = () => {
             </label>
           </div>
 
-          <div className="mb-3 form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="isVerified"
-              checked={isVerified}
-              onChange={(e) => setIsVerified(e.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="isVerified">
-              Mark as Verified
-            </label>
-          </div>
+          {isAdmin && (
+            <div className="mb-3 form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="isVerified"
+                checked={isVerified}
+                onChange={(e) => setIsVerified(e.target.checked)}
+              />
+              <label className="form-check-label" htmlFor="isVerified">
+                Mark as Verified
+              </label>
+            </div>
+          )}
 
           <button type="submit" className="btn btn-primary mt-3">
             ➕ Add Story
