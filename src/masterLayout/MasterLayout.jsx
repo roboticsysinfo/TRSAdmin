@@ -178,7 +178,7 @@ const MasterLayout = ({ children }) => {
                 }
               >
                 <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
-                  Add Story
+                Add Story
               </NavLink>
             </li>
 
@@ -190,7 +190,7 @@ const MasterLayout = ({ children }) => {
                 }
               >
                 <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
-                  Startup Stories
+                Startup Stories
               </NavLink>
             </li>
 
@@ -301,6 +301,18 @@ const MasterLayout = ({ children }) => {
               >
                 <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
                 Site Details
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to='/contacts'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                Contacts
               </NavLink>
             </li>
 

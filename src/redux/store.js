@@ -6,6 +6,7 @@ import companyReducer from '../redux/slices/companySlice';
 import storyReducer from "../redux/slices/storySlice";
 import siteDetailReducer from "../redux/slices/siteDetailSlice"
 import blogReducer from "../redux/slices/blogSlice"
+import contactReducer from "../redux/slices/contactSlice"
 
 const store = configureStore({
 
@@ -19,6 +20,7 @@ const store = configureStore({
     story: storyReducer,
     siteDetail: siteDetailReducer,
     blog: blogReducer,
+    contact : contactReducer
     
   },
 

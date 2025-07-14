@@ -22,6 +22,7 @@ import EditBlogPage from "./pages/EditBlogPage";
 import StoryViewPage from "./pages/StoryViewPage";
 import AddStoryPage from "./pages/AddStoryPage";
 import StartupStoriesPage from "./pages/StartupStoriesPage";
+import ContactListPage from "./pages/ContactListPage";
 
 
 function App() {
@@ -123,6 +124,10 @@ function App() {
 
         <Route element={<PrivateRoute />}>
           <Route path="/startup-stories" element={<StartupStoriesPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/contacts" element={<ContactListPage />} />
         </Route>
 
         {/* ❌ Fallback */}
