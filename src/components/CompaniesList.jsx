@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCompanies, deleteCompany } from '../redux/slices/companySlice';
 import { FaTrash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const CompaniesList = () => {
     
@@ -70,6 +71,9 @@ const CompaniesList = () => {
                                                 <td>{company.headquarter || '-'}</td>
                                                 <td>{new Date(company.createdAt).toLocaleString()}</td>
                                                 <td>
+
+                                                    <Link to={`/edit-company/${company._id}`} className='btn btn-sm btn-primary'>Edit</Link>
+
                                                     <button
                                                         className="btn btn-sm btn-danger"
                                                         onClick={() => handleDelete(company._id)}

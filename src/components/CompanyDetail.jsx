@@ -28,7 +28,7 @@ const CompanyDetail = () => {
 
         if (verifyCompany.fulfilled.match(result)) {
             toast.success("✅ Company verified successfully!");
-            navigate("/verified-companies");
+            navigate("/companies");
         } else {
             toast.error(result.payload || "❌ Failed to verify company");
         }

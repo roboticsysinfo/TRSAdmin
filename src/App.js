@@ -23,6 +23,7 @@ import StoryViewPage from "./pages/StoryViewPage";
 import AddStoryPage from "./pages/AddStoryPage";
 import StartupStoriesPage from "./pages/StartupStoriesPage";
 import ContactListPage from "./pages/ContactListPage";
+import EditCompanyPage from "./pages/EditCompanyPage";
 
 
 function App() {
@@ -69,9 +70,12 @@ function App() {
           <Route path="/companies" element={<CompaniesPage />} />
         </Route>
 
-
         <Route element={<PrivateRoute />}>
           <Route path="/company/:companyId" element={<CompanyDetailPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/edit-company/:id" element={<EditCompanyPage />} />
         </Route>
 
 

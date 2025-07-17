@@ -8,6 +8,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const AddStory = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -42,7 +43,7 @@ const AddStory = () => {
     if (message) {
       toast.success(message);
       dispatch(clearStoryMessage());
-      navigate('/stories');
+      navigate('/');
     }
     if (error) {
       toast.error(error);
