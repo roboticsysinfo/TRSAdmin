@@ -37,7 +37,9 @@ export const fetchCompanyById = createAsyncThunk(
   'company/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/company/by-cid/${id}`);
+      
+      const res = await api.get(`/single-company/${id}`);
+      
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response.data.message || 'Fetch by ID failed');

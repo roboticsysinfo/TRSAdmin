@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCompany, fetchCompanyByUserId } from '../redux/slices/companySlice';
+import {
+    updateCompany,
+    fetchCompanyById,
+} from '../redux/slices/companySlice';
 import { fetchCategories } from '../redux/slices/categorySlice';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditCompany = () => {
+
     const dispatch = useDispatch();
     const router = useNavigate();
-    const { loading, userCompany } = useSelector((state) => state.companies);
+    const { id } = useParams();
+    const { loading, selectedCompany } = useSelector((state) => state.companies);
     const { categories } = useSelector((state) => state.categories);
     const { user } = useSelector((state) => state.auth);
     const userId = user?._id;
@@ -29,51 +34,58 @@ const EditCompany = () => {
             linkedin: '',
             twitter: '',
             googleMyBusiness: '',
-            website: ''
+            website: '',
         },
-        coreTeam: [{ memberName: '', designation: '' }]
+        coreTeam: [{ memberName: '', designation: '' }],
     });
 
     useEffect(() => {
         dispatch(fetchCategories());
-        if (userId) {
-            dispatch(fetchCompanyByUserId(userId));
+        if (id) {
+            dispatch(fetchCompanyById(id));
         }
-    }, [dispatch, userId]);
+    }, [dispatch, id]);
 
     useEffect(() => {
-        if (userCompany) {
+        if (selectedCompany) {
             setFormData({
-                ...userCompany,
+                ...selectedCompany,
                 logo: null,
-                socialMedia: userCompany.socialMedia || {
+                socialMedia: selectedCompany.socialMedia || {
                     facebook: '',
                     instagram: '',
                     linkedin: '',
                     twitter: '',
                     googleMyBusiness: '',
-                    website: ''
+                    website: '',
                 },
-                coreTeam: userCompany.coreTeam?.length
-                    ? userCompany.coreTeam
-                    : [{ memberName: '', designation: '' }]
+                coreTeam: selectedCompany.coreTeam?.length
+                    ? selectedCompany.coreTeam
+                    : [{ memberName: '', designation: '' }],
             });
         }
-    }, [userCompany]);
+    }, [selectedCompany]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
         if (name === 'logo') {
-            setFormData((prev) => ({ ...prev, logo: files[0] }));
+            if (files[0]) {
+                const fileType = files[0].type;
+                if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(fileType)) {
+                    toast.error('Only JPG, PNG, GIF, or WEBP files are allowed');
+                    return;
+                }
+                setFormData((prev) => ({ ...prev, logo: files[0] }));
+            }
         } else if (name.includes('socialMedia')) {
             const field = name.split('.')[1];
             setFormData((prev) => ({
                 ...prev,
                 socialMedia: {
                     ...prev.socialMedia,
-                    [field]: value
-                }
+                    [field]: value,
+                },
             }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
@@ -86,15 +98,11 @@ const EditCompany = () => {
         setFormData({ ...formData, coreTeam: newTeam });
     };
 
-    const addTeamMember = () => {
-        setFormData({ ...formData, coreTeam: [...formData.coreTeam, { memberName: '', designation: '' }] });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!userCompany?._id) {
-            toast.error("Company not loaded yet.");
+        if (!selectedCompany?._id) {
+            toast.error('Company not loaded yet.');
             return;
         }
 
@@ -113,7 +121,7 @@ const EditCompany = () => {
         data.append('socialMedia', JSON.stringify(formData.socialMedia));
         data.append('coreTeam', JSON.stringify(formData.coreTeam));
 
-        const res = await dispatch(updateCompany({ id: userCompany._id, updateData: data }));
+        const res = await dispatch(updateCompany({ id: selectedCompany._id, updateData: data }));
 
         if (res.meta.requestStatus === 'fulfilled') {
             toast.success('Company updated successfully!');
@@ -121,6 +129,25 @@ const EditCompany = () => {
         } else {
             toast.error(res.payload || 'Update failed');
         }
+    };
+
+
+    // Add a new core team member
+    const addTeamMember = () => {
+        setFormData({
+            ...formData,
+            coreTeam: [...formData.coreTeam, { memberName: '', designation: '' }],
+        });
+    };
+
+    // Remove a core team member by index
+    const removeTeamMember = (index) => {
+        const newTeam = [...formData.coreTeam];
+        newTeam.splice(index, 1);
+        setFormData({
+            ...formData,
+            coreTeam: newTeam.length > 0 ? newTeam : [{ memberName: '', designation: '' }],
+        });
     };
 
     return (
@@ -133,42 +160,95 @@ const EditCompany = () => {
                         </div>
 
                         <div className="card-body">
+                            {loading && (
+                                <div className="text-center mb-3">
+                                    <div className="spinner-border text-primary" role="status" />
+                                </div>
+                            )}
 
                             <form onSubmit={handleSubmit} encType="multipart/form-data">
-
                                 <div className="mb-3">
                                     <label className="form-label">Company Logo</label>
-                                    <input type='file' className="form-control" name="logo" onChange={handleChange} required />
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        name="logo"
+                                        onChange={handleChange}
+                                        required={!selectedCompany?.logo}
+                                    />
+                                    {selectedCompany?.logo && (
+                                        <img
+                                            src={selectedCompany.logo}
+                                            alt="Current Logo"
+                                            style={{ height: 60, marginTop: 10 }}
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Company Name</label>
-                                    <input className="form-control" name="name" value={formData.name} onChange={handleChange} required />
+                                    <input
+                                        className="form-control"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Legal Name</label>
-                                    <input className="form-control" name="legalName" value={formData.legalName} onChange={handleChange} required />
+                                    <input
+                                        className="form-control"
+                                        name="legalName"
+                                        value={formData.legalName}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Headquarter</label>
-                                    <input className="form-control" name="headquarter" value={formData.headquarter} onChange={handleChange} required />
+                                    <input
+                                        className="form-control"
+                                        name="headquarter"
+                                        value={formData.headquarter}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Founding Date</label>
-                                    <input type="date" className="form-control" name="foundingDate" value={formData.foundingDate} onChange={handleChange} required />
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        name="foundingDate"
+                                        value={formData.foundingDate}
+                                        onChange={handleChange}
+                                        required
+                                    />
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">About</label>
-                                    <textarea className="form-control" name="about" value={formData.about} onChange={handleChange}></textarea>
+                                    <textarea
+                                        className="form-control"
+                                        name="about"
+                                        value={formData.about}
+                                        onChange={handleChange}
+                                    />
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Business Model</label>
-                                    <select className="form-select" name="businessModel" value={formData.businessModel} onChange={handleChange} required>
+                                    <select
+                                        className="form-select"
+                                        name="businessModel"
+                                        value={formData.businessModel}
+                                        onChange={handleChange}
+                                        required
+                                    >
                                         <option value="">Select</option>
                                         <option value="B2C">B2C</option>
                                         <option value="B2B">B2B</option>
@@ -181,7 +261,13 @@ const EditCompany = () => {
 
                                 <div className="mb-3">
                                     <label className="form-label">Number of Employees</label>
-                                    <select className="form-select" name="noOfEmployees" value={formData.noOfEmployees} onChange={handleChange} required>
+                                    <select
+                                        className="form-select"
+                                        name="noOfEmployees"
+                                        value={formData.noOfEmployees}
+                                        onChange={handleChange}
+                                        required
+                                    >
                                         <option value="">Select</option>
                                         <option value="0-10">0–10</option>
                                         <option value="10-100">10–100</option>
@@ -192,7 +278,13 @@ const EditCompany = () => {
 
                                 <div className="mb-3">
                                     <label className="form-label">Select Category</label>
-                                    <select className="form-select" name="category" value={formData.category} onChange={handleChange} required>
+                                    <select
+                                        className="form-select"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        required
+                                    >
                                         <option value="">Select Category</option>
                                         {categories?.map((cat) => (
                                             <option key={cat._id} value={cat._id}>
@@ -204,52 +296,107 @@ const EditCompany = () => {
 
                                 <div className="mb-3">
                                     <label className="form-label">Social Media Links</label>
-                                    <input className="form-control mb-2" name="socialMedia.facebook" placeholder="Facebook" value={formData.socialMedia.facebook} onChange={handleChange} />
-                                    <input className="form-control mb-2" name="socialMedia.instagram" placeholder="Instagram" value={formData.socialMedia.instagram} onChange={handleChange} />
-                                    <input className="form-control mb-2" name="socialMedia.linkedin" placeholder="LinkedIn" value={formData.socialMedia.linkedin} onChange={handleChange} />
-                                    <input className="form-control mb-2" name="socialMedia.twitter" placeholder="Twitter" value={formData.socialMedia.twitter} onChange={handleChange} />
-                                    <input className="form-control mb-2" name="socialMedia.googleMyBusiness" placeholder="Google My Business" value={formData.socialMedia.googleMyBusiness} onChange={handleChange} />
-                                    <input className="form-control" name="socialMedia.website" placeholder="Website" value={formData.socialMedia.website} onChange={handleChange} />
+                                    <input
+                                        className="form-control mb-2"
+                                        name="socialMedia.facebook"
+                                        placeholder="Facebook"
+                                        value={formData.socialMedia.facebook}
+                                        onChange={handleChange}
+                                    />
+                                    <input
+                                        className="form-control mb-2"
+                                        name="socialMedia.instagram"
+                                        placeholder="Instagram"
+                                        value={formData.socialMedia.instagram}
+                                        onChange={handleChange}
+                                    />
+                                    <input
+                                        className="form-control mb-2"
+                                        name="socialMedia.linkedin"
+                                        placeholder="LinkedIn"
+                                        value={formData.socialMedia.linkedin}
+                                        onChange={handleChange}
+                                    />
+                                    <input
+                                        className="form-control mb-2"
+                                        name="socialMedia.twitter"
+                                        placeholder="Twitter"
+                                        value={formData.socialMedia.twitter}
+                                        onChange={handleChange}
+                                    />
+                                    <input
+                                        className="form-control mb-2"
+                                        name="socialMedia.googleMyBusiness"
+                                        placeholder="Google My Business"
+                                        value={formData.socialMedia.googleMyBusiness}
+                                        onChange={handleChange}
+                                    />
+                                    <input
+                                        className="form-control"
+                                        name="socialMedia.website"
+                                        placeholder="Website"
+                                        value={formData.socialMedia.website}
+                                        onChange={handleChange}
+                                    />
                                 </div>
 
+                                {/* Core Team Section */}
                                 <div className="mb-3">
-                                    <label className="form-label">Core Team</label>
+                                    <label className="form-label fw-bold">Core Team</label>
                                     {formData.coreTeam.map((member, index) => (
-                                        <div key={index} className="mb-2 row">
+                                        <div key={index} className="mb-2 row align-items-center">
                                             <div className="col">
                                                 <input
                                                     type="text"
-                                                    placeholder="Member Name"
                                                     className="form-control"
+                                                    placeholder="Member Name"
                                                     value={member.memberName}
-                                                    onChange={(e) => handleCoreTeamChange(index, 'memberName', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleCoreTeamChange(index, 'memberName', e.target.value)
+                                                    }
                                                     required
                                                 />
                                             </div>
                                             <div className="col">
                                                 <input
                                                     type="text"
-                                                    placeholder="Designation"
                                                     className="form-control"
+                                                    placeholder="Designation"
                                                     value={member.designation}
-                                                    onChange={(e) => handleCoreTeamChange(index, 'designation', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleCoreTeamChange(index, 'designation', e.target.value)
+                                                    }
                                                     required
                                                 />
+                                            </div>
+                                            <div className="col-auto">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => removeTeamMember(index)}
+                                                    disabled={formData.coreTeam.length === 1}
+                                                >
+                                                    ✕
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
-                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-2" onClick={addTeamMember}>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary btn-sm mt-2"
+                                        onClick={addTeamMember}
+                                    >
                                         + Add Team Member
                                     </button>
                                 </div>
+
 
                                 <button type="submit" className="btn btn-primary" disabled={loading}>
                                     {loading ? 'Updating...' : 'Update Company'}
                                 </button>
                             </form>
-
                         </div>
-
                     </div>
                 </div>
             </div>

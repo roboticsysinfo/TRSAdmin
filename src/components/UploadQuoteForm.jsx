@@ -29,7 +29,6 @@ const UploadQuoteForm = () => {
   const fetchLangs = async () => {
     try {
       const res = await api.get("/languages");
-      console.log("lang res api", res.data.data);
       
       setLangList(res.data.data);
     } catch {
