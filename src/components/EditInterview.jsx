@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchInterviewById, updateInterview, clearSelectedInterview } from '../redux/slices/interviewSlice';
+import {
+  fetchInterviewById,
+  updateInterview,
+  clearSelectedInterview
+} from '../redux/slices/interviewSlice';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const EditInterview = () => {
@@ -11,13 +15,15 @@ const EditInterview = () => {
   const { selected, loading } = useSelector((state) => state.interviews);
 
   const [formData, setFormData] = useState({
+    interviewTitle: '',
     personName: '',
     designation: '',
     excerpt: '',
     qa: [{ question: '', answer: '' }]
   });
 
-  const [file, setFile] = useState(null);
+  const [profileFile, setProfileFile] = useState(null);
+  const [interviewFile, setInterviewFile] = useState(null);
 
   useEffect(() => {
     dispatch(fetchInterviewById(id));
@@ -29,6 +35,7 @@ const EditInterview = () => {
   useEffect(() => {
     if (selected) {
       setFormData({
+        interviewTitle: selected.interviewTitle || '',
         personName: selected.personName || '',
         designation: selected.designation || '',
         excerpt: selected.excerpt || '',
@@ -68,25 +75,30 @@ const EditInterview = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (e, type) => {
+    if (type === 'profile') setProfileFile(e.target.files[0]);
+    if (type === 'interview') setInterviewFile(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData();
+    data.append('interviewTitle', formData.interviewTitle);
     data.append('personName', formData.personName);
     data.append('designation', formData.designation);
     data.append('excerpt', formData.excerpt);
     data.append('qa', JSON.stringify(formData.qa));
-    if (file) data.append('profileImage', file);
+
+    if (profileFile) data.append('profileImage', profileFile);
+    if (interviewFile) data.append('interviewImage', interviewFile);
 
     dispatch(updateInterview({ id, formData: data })).then((res) => {
-      if (!res.error) navigate('/interviews'); // redirect after update
+      if (!res.error) navigate('/interviews');
     });
   };
 
   return (
+    
     <div className="container mt-4">
       <div className="card">
         <div className="card-header bg-warning">
@@ -97,6 +109,19 @@ const EditInterview = () => {
             <p>Loading...</p>
           ) : (
             <form onSubmit={handleSubmit} encType="multipart/form-data">
+
+              <div className="mb-3">
+                <label className="form-label">Interview Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="interviewTitle"
+                  value={formData.interviewTitle}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
               <div className="mb-3">
                 <label className="form-label">Person Name</label>
                 <input
@@ -137,8 +162,17 @@ const EditInterview = () => {
                 <input
                   type="file"
                   className="form-control"
-                  name="profileImage"
-                  onChange={handleFileChange}
+                  onChange={(e) => handleFileChange(e, 'profile')}
+                  accept="image/*"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Interview Image (optional)</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  onChange={(e) => handleFileChange(e, 'interview')}
                   accept="image/*"
                 />
               </div>
@@ -192,12 +226,11 @@ const EditInterview = () => {
                   Update Interview
                 </button>
               </div>
+
             </form>
           )}
         </div>
       </div>
-
-
     </div>
   );
 };
