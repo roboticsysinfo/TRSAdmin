@@ -6,7 +6,8 @@ import companyReducer from '../redux/slices/companySlice';
 import storyReducer from "../redux/slices/storySlice";
 import siteDetailReducer from "../redux/slices/siteDetailSlice"
 import blogReducer from "../redux/slices/blogSlice"
-import contactReducer from "../redux/slices/contactSlice"
+import contactReducer from "../redux/slices/contactSlice";
+import interviewReducer from "../redux/slices/interviewSlice"
 
 const store = configureStore({
 
@@ -20,8 +21,8 @@ const store = configureStore({
     story: storyReducer,
     siteDetail: siteDetailReducer,
     blog: blogReducer,
-    contact : contactReducer
-    
+    contact: contactReducer,
+    interviews: interviewReducer,
   },
 
 });

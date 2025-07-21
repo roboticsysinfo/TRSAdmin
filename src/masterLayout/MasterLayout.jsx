@@ -184,6 +184,30 @@ const MasterLayout = ({ children }) => {
 
             <li>
               <NavLink
+                to='/add-interview'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                Add Interview
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to='/interviews'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                  Interviews List
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
                 to='/startup-stories'
                 className={(navData) =>
                   navData.isActive ? "active-page" : ""
@@ -290,7 +314,6 @@ const MasterLayout = ({ children }) => {
                 Blogs List
               </NavLink>
             </li>
-
 
             <li>
               <NavLink

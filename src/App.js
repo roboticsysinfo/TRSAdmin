@@ -24,6 +24,11 @@ import AddStoryPage from "./pages/AddStoryPage";
 import StartupStoriesPage from "./pages/StartupStoriesPage";
 import ContactListPage from "./pages/ContactListPage";
 import EditCompanyPage from "./pages/EditCompanyPage";
+import AddInterview from "./components/AddInterview";
+import AddInterviewPage from "./pages/AddInterviewPage";
+import EditInterview from "./components/EditInterview";
+import EditInterviewPage from "./pages/EditInterviewPage";
+import InterviewListPage from "./pages/InterviewListPage";
 
 
 function App() {
@@ -54,17 +59,26 @@ function App() {
 
         <Route path="/login" element={<SignInPage />} />
 
-
         {/* 🔐 Protected Routes */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<HomePageOne />} />
         </Route>
 
-
         <Route element={<PrivateRoute />}>
           <Route path="/company-list-requests" element={<CompanyListRequestPage />} />
         </Route>
 
+        <Route element={<PrivateRoute />}>
+          <Route path="/add-interview" element={<AddInterviewPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/interviews" element={<InterviewListPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/edit-interview/:id" element={<EditInterviewPage />} />
+        </Route>
 
         <Route element={<PrivateRoute />}>
           <Route path="/companies" element={<CompaniesPage />} />
@@ -78,21 +92,17 @@ function App() {
           <Route path="/edit-company/:id" element={<EditCompanyPage />} />
         </Route>
 
-
         <Route element={<PrivateRoute />}>
           <Route path="/manage-categories" element={<CategoriesPage />} />
         </Route>
-
 
         <Route element={<PrivateRoute />}>
           <Route path="/story-requests" element={<StoryRequestPage />} />
         </Route>
 
-
         <Route element={<PrivateRoute />}>
           <Route path="/edit-story/:id" element={<EditStoryPage />} />
         </Route>
-
 
         <Route element={<PrivateRoute />}>
           <Route path="/stories" element={<VerfiedStoriesPage />} />
@@ -133,6 +143,8 @@ function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/contacts" element={<ContactListPage />} />
         </Route>
+
+
 
         {/* ❌ Fallback */}
         <Route path="*" element={<ErrorPage />} />
