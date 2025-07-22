@@ -19,6 +19,9 @@ const EditInterview = () => {
     personName: '',
     designation: '',
     excerpt: '',
+    metaTitle: '',
+    metaDescription: '',
+    metaKeywords: '',
     qa: [{ question: '', answer: '' }]
   });
 
@@ -39,6 +42,9 @@ const EditInterview = () => {
         personName: selected.personName || '',
         designation: selected.designation || '',
         excerpt: selected.excerpt || '',
+        metaTitle: selected.metaTitle || '',
+        metaDescription: selected.metaDescription || '',
+        metaKeywords: selected.metaKeywords || '',
         qa: selected.qa?.length ? selected.qa : [{ question: '', answer: '' }]
       });
     }
@@ -87,6 +93,9 @@ const EditInterview = () => {
     data.append('personName', formData.personName);
     data.append('designation', formData.designation);
     data.append('excerpt', formData.excerpt);
+    data.append('metaTitle', formData.metaTitle);
+    data.append('metaDescription', formData.metaDescription);
+    data.append('metaKeywords', formData.metaKeywords);
     data.append('qa', JSON.stringify(formData.qa));
 
     if (profileFile) data.append('profileImage', profileFile);
@@ -98,7 +107,6 @@ const EditInterview = () => {
   };
 
   return (
-    
     <div className="container mt-4">
       <div className="card">
         <div className="card-header bg-warning">
@@ -109,7 +117,6 @@ const EditInterview = () => {
             <p>Loading...</p>
           ) : (
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-
               <div className="mb-3">
                 <label className="form-label">Interview Title</label>
                 <input
@@ -153,6 +160,39 @@ const EditInterview = () => {
                   name="excerpt"
                   rows="3"
                   value={formData.excerpt}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Meta Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Meta Description</label>
+                <textarea
+                  className="form-control"
+                  name="metaDescription"
+                  rows="2"
+                  value={formData.metaDescription}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Meta Keywords (comma separated)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="metaKeywords"
+                  value={formData.metaKeywords}
                   onChange={handleChange}
                 />
               </div>
@@ -226,7 +266,6 @@ const EditInterview = () => {
                   Update Interview
                 </button>
               </div>
-
             </form>
           )}
         </div>
